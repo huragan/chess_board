@@ -21,7 +21,9 @@ case class King(color : Symbol) extends Piece {
 case class Rook(color : Symbol) extends Piece {
   def basicMoves(curPos: Square): Seq[Seq[Square]] = List(
     Board.squaresLeftOf(curPos),
-    Board.squaresRightOf(curPos)
+    Board.squaresRightOf(curPos),
+    Board.squaresTopOf(curPos),
+    Board.squaresBottomOf(curPos)
   )
 
   override def toString: String = if (color == 'w) "R" else "r"
@@ -79,9 +81,10 @@ object Board {
     row <- rows
   } yield Square(col, row)).toList
 
-  def squaresLeftOf(pos: Square): Seq[Square]  = (cols takeWhile (c => c < pos.col))  map (c => Square(c, pos.row))
-  def squaresRightOf(pos: Square): Seq[Square] = (cols dropWhile (c => c <= pos.col)) map (c => Square(c, pos.row))
-
+  def squaresLeftOf(pos: Square): Seq[Square]   = (cols takeWhile (c => c < pos.col))  map (c => Square(c, pos.row))
+  def squaresRightOf(pos: Square): Seq[Square]  = (cols dropWhile (c => c <= pos.col)) map (c => Square(c, pos.row))
+  def squaresBottomOf(pos: Square): Seq[Square] = (rows takeWhile (r => r < pos.row))  map (r => Square(pos.col, r))
+  def squaresTopOf(pos:Square): Seq[Square]     = (rows dropWhile (r => r <= pos.row)) map (r => Square(pos.col, r))
 
   def apply(): Board = new Board(
     Map(
