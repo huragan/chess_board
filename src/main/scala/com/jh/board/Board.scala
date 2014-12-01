@@ -1,18 +1,31 @@
 package com.jh.board
 
-trait Piece {
+sealed trait Piece {
   def canMove(pos: Square): Boolean = true
+  def basicMoves(curPos: Square): Seq[Seq[Square]]
 }
 
 case class King(color : Symbol) extends Piece {
 
-  def basicMoves(curPos: Square): List[Square] = List(
-    curPos.topLeftSquare,    curPos.topSquare,    curPos.topRightSquare,
-    curPos.leftSquare,                            curPos.rightSquare,
-    curPos.bottomLeftSquare, curPos.bottomSquare, curPos.bottomRightSquare
-  ).filter(_.isValid)
+  def basicMoves(curPos: Square): Seq[Seq[Square]] = List(
+    List(
+      curPos.topLeftSquare,    curPos.topSquare,    curPos.topRightSquare,
+      curPos.leftSquare,                            curPos.rightSquare,
+      curPos.bottomLeftSquare, curPos.bottomSquare, curPos.bottomRightSquare
+    ).filter(_.isValid)
+  )
   
   override def toString: String = if (color == 'w) "K" else "k"
+}
+
+case class Rook(color : Symbol) extends Piece {
+  def basicMoves(curPos: Square): Seq[Seq[Square]] = List(
+    Board.squaresLeftOf(curPos),
+    Board.squaresRightOf(curPos)
+  )
+
+  override def toString: String = if (color == 'w) "R" else "r"
+
 }
 
 case class Square(col : Char, row : Int) {
@@ -31,7 +44,7 @@ case class Square(col : Char, row : Int) {
   def bottomLeftSquare: Square  = Square(prevCol, prevRow)
   def bottomRightSquare: Square = Square(prevCol, nextRow)
 
-  def isValid: Boolean = (Board.columns contains col) && (Board.rows contains row)
+  def isValid: Boolean = (Board.cols contains col) && (Board.rows contains row)
 
   override def toString: String = col.toString + row.toString
 }
@@ -48,7 +61,7 @@ case class Board(val board: Map[Square, Piece]) {
   }
 
   override def toString = {
-    Board.getAllSquares.map(sqr =>
+    Board.board.map(sqr =>
       board.get(sqr) match {
         case Some(p) => p.toString
         case None    => "_"
@@ -58,13 +71,17 @@ case class Board(val board: Map[Square, Piece]) {
 }
 
 object Board {
-  val columns = ('a' to 'h')
+  val cols =   ('a' to 'h')
   val rows   = ( 1  to  8 )
 
-  def getAllSquares(): List[Square] = (for {
-    col <- columns
+  val board: List[Square] = (for {
+    col <- cols
     row <- rows
   } yield Square(col, row)).toList
+
+  def squaresLeftOf(pos: Square): Seq[Square]  = (cols takeWhile (c => c < pos.col))  map (c => Square(c, pos.row))
+  def squaresRightOf(pos: Square): Seq[Square] = (cols dropWhile (c => c <= pos.col)) map (c => Square(c, pos.row))
+
 
   def apply(): Board = new Board(
     Map(
