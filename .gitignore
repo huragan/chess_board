@@ -2,7 +2,7 @@
 *.log
 
 .ensime
-.ensime_cache/
+.ensime_cache
 
 # sbt specific
 .cache/

@@ -7,7 +7,7 @@ class BoardSpec extends Specification {
 
   "Board" should {
     "should return correct squares to the left of given position" in {
-      Board.squaresLeftOf(Square('e', 4)) must_=== Vector(Square('a', 4), Square('b', 4), Square('c', 4), Square('d', 4))
+      Square.untilValid(Square('e', 4), (_.leftSquare)) must_=== List(Square('d', 4), Square('c', 4), Square('b', 4), Square('a', 4))
       Board.squaresLeftOf(Square('a', 4)) must_=== Vector()
     }
 

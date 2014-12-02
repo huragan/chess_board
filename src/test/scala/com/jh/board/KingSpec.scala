@@ -10,9 +10,9 @@ class KingMovmentSpec extends Specification {
       King('b).basicMoves(Square('d', 4)) must_===
       List(
         List(
-          Square('e', 3), Square('e', 4), Square('e', 5),
-          Square('d', 3),                 Square('d', 5),
-          Square('c', 3), Square('c', 4), Square('c', 5)
+          Square('c', 5), Square('d', 5), Square('e', 5),
+          Square('c', 4),                 Square('e', 4),
+          Square('c', 3), Square('d', 3), Square('e', 3)
         )
       )
     }
@@ -21,8 +21,9 @@ class KingMovmentSpec extends Specification {
       King('b).basicMoves(Square('a', 1)) must_===
       List(
         List(
-          Square('b', 1), Square('b', 2),
-          Square('a', 2)
+          
+          Square('a', 2), Square('b', 2),
+                          Square('b', 1)
         )
       )
     }

@@ -20,10 +20,10 @@ case class King(color : Symbol) extends Piece {
 
 case class Rook(color : Symbol) extends Piece {
   def basicMoves(curPos: Square): Seq[Seq[Square]] = List(
-    Board.squaresLeftOf(curPos),
-    Board.squaresRightOf(curPos),
-    Board.squaresTopOf(curPos),
-    Board.squaresBottomOf(curPos)
+    Square.untilValid(curPos:Square, (_.leftSquare)),
+    Square.untilValid(curPos:Square, (_.rightSquare)),
+    Square.untilValid(curPos:Square, (_.topSquare)),
+    Square.untilValid(curPos:Square, (_.bottomSquare))
   )
 
   override def toString: String = if (color == 'w) "R" else "r"
@@ -35,20 +35,28 @@ case class Square(col : Char, row : Int) {
   def nextRow: Int  = row + 1
   def prevCol: Char = (col.toInt - 1) toChar
   def nextCol: Char = (col.toInt + 1) toChar
-
   
-  def topSquare: Square         = Square(nextCol, row)
-  def topLeftSquare: Square     = Square(nextCol, prevRow)
+  def topSquare: Square         = Square(col, nextRow)
+  def topLeftSquare: Square     = Square(prevCol, nextRow)
   def topRightSquare: Square    = Square(nextCol, nextRow)
-  def leftSquare: Square        = Square(col, prevRow)
-  def rightSquare: Square       = Square(col, nextRow)
-  def bottomSquare: Square      = Square(prevCol, row)
+  def leftSquare: Square        = Square(prevCol, row)
+  def rightSquare: Square       = Square(nextCol, row)
+  def bottomSquare: Square      = Square(col, prevRow)
   def bottomLeftSquare: Square  = Square(prevCol, prevRow)
-  def bottomRightSquare: Square = Square(prevCol, nextRow)
+  def bottomRightSquare: Square = Square(nextCol, prevRow)
 
   def isValid: Boolean = (Board.cols contains col) && (Board.rows contains row)
-
+ 
   override def toString: String = col.toString + row.toString
+}
+object Square {
+  def untilValid(cur:Square, f: Square => Square): List[Square] = {
+    val skipFirst = f(cur)
+    until(skipFirst, f)
+  }
+
+  def until(cur:Square, f: Square => Square): List[Square] =
+  if (cur.isValid) cur :: until(f.apply(cur), f) else Nil
 }
 
 case class Board(val board: Map[Square, Piece]) {
