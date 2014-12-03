@@ -30,6 +30,18 @@ case class Rook(color : Symbol) extends Piece {
 
 }
 
+case class Bishop(color : Symbol) extends Piece {
+  def basicMoves(curPos: Square): Seq[Seq[Square]] = List(
+    Square.untilValid(curPos:Square, (_.topLeftSquare)),
+    Square.untilValid(curPos:Square, (_.topRightSquare)),
+    Square.untilValid(curPos:Square, (_.bottomLeftSquare)),
+    Square.untilValid(curPos:Square, (_.bottomRightSquare))
+  )
+
+  override def toString: String = if (color == 'w) "B" else "b"
+
+}
+
 case class Square(col : Char, row : Int) {
   def prevRow: Int  = row - 1
   def nextRow: Int  = row + 1
@@ -97,12 +109,13 @@ object Board {
   def apply(): Board = new Board(
     Map(
       Square('a', 1) -> King('w),
-      Square('e', 4) -> King('b)
+      Square('b', 2) -> Bishop('w),
+      Square('d', 4) -> King('w)
     )
   )
 
   def main(args: Array[String]) = {
     val board = Board()
-    println(board.move(Square('a', 1), Square('a', 2)))
+    println(board.move(Square('a', 1), Square('a', 8)))
   }
 }
